@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meraki | Sistema de Gestión Alimentaria</title>
+  <link rel="stylesheet" href="css/style1.css">
+  <script src="js/app.js" defer></script>
+  <!-- Estilos adicionales: mantienen el diseño original y agregan los módulos/RF -->
+</head>
+
+<body>
+  <!-- LOGIN: RF 1, 1.1, 1.2, 1.4 -->
+  <section id="pantallaLogin" class="login-pantalla">
+    <div class="login-caja">
+      <img src="img/logo3.png" alt="Logo Meraki" class="login-logo">
+      <h1>Iniciar sesión</h1>
+      <p>Sistema de Gestión Alimentaria</p>
+
+      <form id="formLogin">
+
+
+        <div class="campo">
+          <label for="loginUsuario">Usuario</label>
+          <input id="loginUsuario" type="text" autocomplete="username" required placeholder="Ingrese su usuario">
+        </div>
+
+
+        <div class="campo">
+          <label for="loginClave">Contraseña</label>
+          <input id="loginClave" type="password" autocomplete="current-password" required placeholder="Ingrese su contraseña">
+        </div>
+
+        <button class="boton-principal" type="submit" style="width:100%;margin-top:8px;">Ingresar</button>
+        <div id="mensajeLogin" class="mensaje"></div>
+      </form>
+
+      <div class="login-ayuda">
+        <button class="enlace-boton" type="button" id="btnRestablecer">Restablecer contraseña</button>
+        <span style="color:#686572;font-size:8px;">Demo: admin / 1234</span>
+      </div>
+
+      <form id="formRestablecer" class="oculto" style="margin-top:18px;">
+
+        <div class="campo">
+          <label for="recUsuario">Usuario</label>
+          <input id="recUsuario" type="text" required>
+        </div>
+
+
+        <div class="campo">
+          <label for="recNuevaClave">Nueva contraseña</label>
+          <input id="recNuevaClave" type="password" minlength="4" required>
+        </div>
+
+        <button class="boton-secundario" type="submit">Guardar nueva contraseña</button>
+        <div id="mensajeReset" class="mensaje"></div>
+
+      </form>
+    </div>
+  </section>
+
+
+  <!-- APLICACIÓN -->
+  <div id="aplicacion" class="aplicacion oculto">
+    <aside class="barra-lateral">
+
+      <div class="marca">
+        <img src="img/logo3.png" alt="Logo">
+      </div>
+
+      <nav class="menu">
+        <p class="titulo-menu">MENÚ PRINCIPAL</p>
+
+        <a href="#" class="elemento-menu activo" data-vista="dashboard">
+          <span class="icono">⌂</span><span>Dashboard</span>
+        </a>
+        <a href="#" class="elemento-menu" data-vista="usuarios">
+          <span class="icono">▣</span><span>Usuarios</span>
+        </a>
+        <a href="#" class="elemento-menu" data-vista="alimentos">
+          <span class="icono">▤</span><span>Alimentos</span>
+        </a>
+        <a href="#" class="elemento-menu" data-vista="inventario">
+          <span class="icono">◫</span><span>Inventario</span>
+        </a>
+        <a href="#" class="elemento-menu" data-vista="sincronizacion">
+          <span class="icono">↔</span><span>Sincronización</span>
+        </a>
+        <a href="#" class="elemento-menu" data-vista="contabilidad">
+          <span class="icono">$</span><span>Contabilidad</span>
+        </a>
+        <a href="#" class="elemento-menu" data-vista="reportes">
+          <span class="icono">▥</span><span>Reportes</span>
+        </a>
+
+        <p class="titulo-menu titulo-menu-inferior">SISTEMA</p>
+        <a href="#" class="elemento-menu" data-vista="configuracion">
+          <span class="icono">⚙</span><span>Configuración</span>
+        </a>
+        <a href="#" class="elemento-menu" data-vista="ayuda">
+          <span class="icono">?</span><span>Ayuda</span>
+        </a>
+      </nav>
+
+      <div class="usuario-barra-lateral">
+        <div class="avatar" id="avatarSidebar">AD</div>
+        <div>
+          <strong id="nombreSidebar">Administrador</strong>
+          <small id="rolSidebar">Administrador</small>
+        </div>
+        <span class="mas">⋮</span>
+      </div>
+    </aside>
+
+    <main class="principal">
+      <header class="barra-superior">
+        <div>
+          <p class="migas-pan" id="migas">Inicio / Dashboard</p>
+          <h1 id="tituloSuperior">Panel principal</h1>
+        </div>
+        <div class="acciones-superiores">
+          <button class="boton-icono notificacion" aria-label="Notificaciones" onclick="mostrarVista('reportes')">
+            ♧<span class="punto-notificacion"></span>
+          </button>
+          <button class="boton-perfil" id="btnPerfil">
+            <span class="avatar pequeno" id="avatarTop">AD</span>
+            <span id="nombreTop">Administrador</span>
+            <span>⌄</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- DASHBOARD -->
+      <section id="vista-dashboard" class="vista activa">
+        <section class="bienvenida">
+          <div>
+            <span class="etiqueta-superior">SISTEMA MERAKI</span>
+            <h2>Bienvenido de nuevo</h2>
+            <p>Consulta el estado del inventario y la información de tu sistema.</p>
+          </div>
+          <button class="boton-principal" onclick="mostrarVista('alimentos')">+ Registrar alimento</button>
+        </section>
+
+        <section class="cuadricula-estadisticas">
+          <article class="tarjeta-estadistica">
+            <div class="icono-estadistica dorado">▤</div>
+            <div class="informacion-estadistica">
+              <span>Productos registrados</span><strong id="statProductos">0</strong>
+              <small class="positivo">Actualizado desde el sistema</small>
+            </div>
+          </article>
+          <article class="tarjeta-estadistica">
+            <div class="icono-estadistica verde">✓</div>
+            <div class="informacion-estadistica">
+              <span>Inventario disponible</span><strong id="statInventario">0</strong>
+              <small class="positivo">Existencias actuales</small>
+            </div>
+          </article>
+          <article class="tarjeta-estadistica">
+            <div class="icono-estadistica rojo">!</div>
+            <div class="informacion-estadistica">
+              <span>Productos por vencer</span><strong id="statVencer">0</strong>
+              <small class="negativo">Requieren atención</small>
+            </div>
+          </article>
+          <article class="tarjeta-estadistica">
+            <div class="icono-estadistica morado">$</div>
+            <div class="informacion-estadistica">
+              <span>Ventas del mes</span><strong id="statVentas">$0</strong>
+              <small class="positivo">Movimientos registrados</small>
+            </div>
+          </article>
+        </section>
+
+        <section class="cuadricula-contenido">
+          <article class="panel panel-inventario">
+            <div class="encabezado-panel">
+              <div><span class="etiqueta-seccion">INVENTARIO</span><h3>Estado del inventario</h3></div>
+              <a href="#" class="enlace-ver" onclick="mostrarVista('inventario');return false;">Ver todo →</a>
+            </div>
+            <div class="lista-inventario" id="dashboardInventario"></div>
+          </article>
+
+          <article class="panel panel-alertas">
+            <div class="encabezado-panel">
+              <div><span class="etiqueta-seccion">ALERTAS</span><h3>Notificaciones</h3></div>
+              <span class="contador-alertas" id="contadorAlertas">0</span>
+            </div>
+            <div class="lista-alertas" id="dashboardAlertas"></div>
+          </article>
+        </section>
+
+        <section class="panel panel-reportes">
+          <div class="encabezado-panel">
+            <div><span class="etiqueta-seccion">REPORTES</span><h3>Resumen de operaciones</h3></div>
+            <select id="filtroGrafica">
+              <option>Últimos 7 días</option><option>Este mes</option><option>Últimos 3 meses</option>
+            </select>
+          </div>
+          <div class="area-grafica">
+            <div class="eje-y-grafica"><span>100</span><span>75</span><span>50</span><span>25</span><span>0</span></div>
+            <div class="grafica">
+              <div class="linea-cuadricula"></div><div class="linea-cuadricula"></div>
+              <div class="linea-cuadricula"></div><div class="linea-cuadricula"></div>
+              <div class="barras" id="graficaBarras"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="seccion-accesos-rapidos">
+          <div class="encabezado-seccion">
+            <div><span class="etiqueta-seccion">ACCESOS RÁPIDOS</span><h3>Módulos del sistema</h3></div>
+          </div>
+
+          <div class="cuadricula-accesos">
+            <a href="#" class="tarjeta-acceso" onclick="mostrarVista('alimentos');return false;"><span class="icono-acceso">▤</span><strong>Gestionar alimentos</strong><small>Registrar, modificar, eliminar y pérdidas</small><span class="flecha">→</span></a>
+            <a href="#" class="tarjeta-acceso" onclick="mostrarVista('inventario');return false;"><span class="icono-acceso">◫</span><strong>Gestionar inventario</strong><small>Consultar existencias en tiempo real</small><span class="flecha">→</span></a>
+            <a href="#" class="tarjeta-acceso" onclick="mostrarVista('contabilidad');return false;"><span class="icono-acceso">$</span><strong>Movimientos contables</strong><small>Ventas, gastos y operaciones</small><span class="flecha">→</span></a>
+            <a href="#" class="tarjeta-acceso" onclick="mostrarVista('reportes');return false;"><span class="icono-acceso">▥</span><strong>Generar reportes</strong><small>Diarios, inventario, pérdidas y consumo</small><span class="flecha">→</span></a>
+          </div>
+
+        </section>
+
+      </section>
+
+      <!-- USUARIOS: RF 2.1 - 2.4 -->
+      <section id="vista-usuarios" class="vista">
+        <div class="titulo-vista"><span class="etiqueta-seccion">GESTIÓN DE USUARIOS</span><h2>Usuarios del sistema</h2><p>Creación, modificación, eliminación e informes de usuarios.</p></div>
+        <div class="modulo-grid">
+          <article class="panel panel-form">
+            <div class="encabezado-panel"><div><span class="etiqueta-seccion">2.1 / 2.2</span><h3>Crear o modificar usuario</h3></div></div>
+            <form id="formUsuario" style="padding-top:18px;">
+              <input type="hidden" id="usuarioId">
+              <div class="form-grid">
+                <div class="campo"><label>Nombre completo</label><input id="usuarioNombre" required></div>
+                <div class="campo"><label>Usuario</label><input id="usuarioLogin" required></div>
+                <div class="campo"><label>Contraseña</label><input id="usuarioClave" type="password" minlength="4" required></div>
+                <div class="campo"><label>Rol</label><select id="usuarioRol"><option>Administrador</option><option>Operador</option><option>Contador</option><option>Consulta</option></select></div>
+              </div>
+              <div class="acciones"><button class="boton-principal" type="submit">Guardar usuario</button><button class="boton-secundario" type="button" onclick="limpiarUsuario()">Limpiar</button></div>
+              <div id="mensajeUsuario" class="mensaje"></div>
+            </form>
+          </article>
+          <article class="panel">
+            <div class="encabezado-panel"><div><span class="etiqueta-seccion">2.3</span><h3>Usuarios registrados</h3></div></div>
+            <div class="tabla-contenedor"><table class="tabla"><thead><tr><th>Nombre</th><th>Usuario</th><th>Rol</th><th>Acciones</th></tr></thead><tbody id="tablaUsuarios"></tbody></table></div>
+          </article>
+        </div>
+        <article class="panel" style="margin-top:20px;">
+          <div class="encabezado-panel"><div><span class="etiqueta-seccion">2.4</span><h3>Informe de usuarios</h3></div><button class="boton-secundario" onclick="generarInformeUsuarios()">Generar informe</button></div>
+          <div id="informeUsuarios" class="panel-form"></div>
+        </article>
+      </section>
+
+      <!-- ALIMENTOS: RF 3.1 - 3.3 -->
+      <section id="vista-alimentos" class="vista">
+        <div class="titulo-vista"><span class="etiqueta-seccion">ADMINISTRACIÓN DE ALIMENTOS</span><h2>Registro de alimentos</h2><p>Ingreso, modificación, eliminación y registro de pérdidas.</p></div>
+        <div class="modulo-grid">
+          <article class="panel panel-form">
+            <div class="encabezado-panel"><div><span class="etiqueta-seccion">3.1 / 3.2</span><h3>Registrar / modificar alimento</h3></div></div>
+            <form id="formAlimento" style="padding-top:18px;">
+              <input type="hidden" id="alimentoId">
+              <div class="form-grid">
+                <div class="campo"><label>Nombre del alimento</label><input id="alimentoNombre" required></div>
+                <div class="campo"><label>Categoría</label><select id="alimentoCategoria"><option>Lácteos</option><option>Granos</option><option>Verduras</option><option>Frutas</option><option>Cárnicos</option><option>Otros</option></select></div>
+                <div class="campo"><label>Cantidad</label><input id="alimentoCantidad" type="number" min="0" required></div>
+                <div class="campo"><label>Fecha de vencimiento</label><input id="alimentoVencimiento" type="date" required></div>
+                <div class="campo"><label>Sede</label><select id="alimentoSede"><option>Sede principal</option><option>Sede norte</option><option>Sede sur</option></select></div>
+              </div>
+              <div class="acciones"><button class="boton-principal" type="submit">Guardar alimento</button><button class="boton-secundario" type="button" onclick="limpiarAlimento()">Limpiar</button></div>
+              <div id="mensajeAlimento" class="mensaje"></div>
+            </form>
+          </article>
+
+          <article class="panel panel-form">
+            <div class="encabezado-panel"><div><span class="etiqueta-seccion">3.3</span><h3>Registrar pérdida de alimento</h3></div></div>
+            <form id="formPerdida" style="padding-top:18px;">
+              <div class="form-grid">
+                <div class="campo form-full"><label>Alimento</label><select id="perdidaAlimento" required></select></div>
+                <div class="campo"><label>Cantidad perdida</label><input id="perdidaCantidad" type="number" min="1" required></div>
+                <div class="campo"><label>Motivo</label><select id="perdidaMotivo"><option>Vencimiento</option><option>Daño</option><option>Descomposición</option><option>Otro</option></select></div>
+                <div class="campo form-full"><label>Observación</label><textarea id="perdidaObservacion" placeholder="Detalle de la pérdida"></textarea></div>
+              </div>
+              <div class="acciones"><button class="boton-peligro" type="submit">Registrar pérdida</button></div>
+              <div id="mensajePerdida" class="mensaje"></div>
+            </form>
+          </article>
+        </div>
+        <article class="panel" style="margin-top:20px;">
+          <div class="encabezado-panel"><div><span class="etiqueta-seccion">REGISTROS</span><h3>Alimentos registrados</h3></div></div>
+          <div class="tabla-contenedor"><table class="tabla"><thead><tr><th>Alimento</th><th>Categoría</th><th>Cantidad</th><th>Vence</th><th>Sede</th><th>Acciones</th></tr></thead><tbody id="tablaAlimentos"></tbody></table></div>
+        </article>
+      </section>
+
+      <!-- INVENTARIO: RF 3.3 -->
+      <section id="vista-inventario" class="vista">
+        <div class="titulo-vista"><span class="etiqueta-seccion">INVENTARIO</span><h2>Inventario en tiempo real</h2><p>Las cantidades se actualizan automáticamente al registrar ingresos y pérdidas.</p></div>
+        <div class="mini-estadisticas">
+          <div class="mini-card"><span>Total de productos</span><strong id="invTotal">0</strong></div>
+          <div class="mini-card"><span>Unidades disponibles</span><strong id="invUnidades">0</strong></div>
+          <div class="mini-card"><span>Productos críticos</span><strong id="invCriticos">0</strong></div>
+        </div>
+        <article class="panel">
+          <div class="encabezado-panel"><div><span class="etiqueta-seccion">EXISTENCIAS</span><h3>Inventario general</h3></div><button class="boton-secundario" onclick="mostrarVista('sincronizacion')">Sincronizar →</button></div>
+          <div class="tabla-contenedor"><table class="tabla"><thead><tr><th>Alimento</th><th>Categoría</th><th>Existencias</th><th>Vencimiento</th><th>Sede</th><th>Estado</th></tr></thead><tbody id="tablaInventario"></tbody></table></div>
+        </article>
+      </section>
+
+      <!-- SINCRONIZACIÓN: RF 4.1 - 4.2 -->
+      <section id="vista-sincronizacion" class="vista">
+        <div class="titulo-vista"><span class="etiqueta-seccion">SINCRONIZACIÓN DE INVENTARIO</span><h2>Estado de sincronización</h2><p>Actualización de información y comunicación entre sedes.</p></div>
+        <div class="modulo-grid">
+          <article class="panel panel-form">
+            <div class="encabezado-panel"><div><span class="etiqueta-seccion">4.1</span><h3>Sincronizar información</h3></div></div>
+            <div style="padding:22px;">
+              <div class="estado-sync"><span class="punto-sync" id="puntoSync"></span><span id="estadoSync">Información sincronizada</span></div>
+              <p id="ultimaSync" style="color:#777481;font-size:9px;margin-top:12px;">Sincronización pendiente.</p>
+              <div class="acciones"><button class="boton-principal" onclick="sincronizar()">Sincronizar ahora</button></div>
+              <div id="mensajeSync" class="mensaje"></div>
+            </div>
+          </article>
+          <article class="panel">
+            <div class="encabezado-panel"><div><span class="etiqueta-seccion">4.2</span><h3>Interconexión de sedes</h3></div></div>
+            <div class="tabla-contenedor"><table class="tabla"><thead><tr><th>Sede</th><th>Estado</th><th>Última actualización</th></tr></thead><tbody id="tablaSedes"></tbody></table></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- CONTABILIDAD: RF 5.1 - 5.3 -->
+      <section id="vista-contabilidad" class="vista">
+        <div class="titulo-vista"><span class="etiqueta-seccion">MOVIMIENTOS CONTABLES</span><h2>Contabilidad</h2><p>Ganancias, gastos operativos y registro de operaciones.</p></div>
+        <div class="modulo-grid">
+          <article class="panel panel-form">
+            <div class="encabezado-panel"><div><span class="etiqueta-seccion">5.3</span><h3>Registrar operación contable</h3></div></div>
+            <form id="formContable" style="padding:18px 22px;">
+              <div class="form-grid">
+                <div class="campo"><label>Tipo</label><select id="contableTipo"><option>Venta</option><option>Gasto operativo</option></select></div>
+                <div class="campo"><label>Valor</label><input id="contableValor" type="number" min="0" required></div>
+                <div class="campo form-full"><label>Descripción</label><input id="contableDescripcion" required placeholder="Descripción de la operación"></div>
+              </div>
+              <div class="acciones"><button class="boton-principal" type="submit">Registrar operación</button></div>
+              <div id="mensajeContable" class="mensaje"></div>
+            </form>
+          </article>
+          <article class="panel">
+            <div class="encabezado-panel"><div><span class="etiqueta-seccion">5.1 / 5.2</span><h3>Resumen financiero</h3></div></div>
+            <div class="mini-estadisticas" style="padding:18px 18px 0;">
+              <div class="mini-card"><span>Ganancias por ventas</span><strong id="totalVentas">$0</strong></div>
+              <div class="mini-card"><span>Gastos operativos</span><strong id="totalGastos">$0</strong></div>
+              <div class="mini-card"><span>Balance</span><strong id="balance">$0</strong></div>
+            </div>
+          </article>
+        </div>
+        <article class="panel" style="margin-top:20px;">
+          <div class="encabezado-panel"><div><span class="etiqueta-seccion">OPERACIONES</span><h3>Registro contable</h3></div></div>
+          <div class="tabla-contenedor"><table class="tabla"><thead><tr><th>Fecha</th><th>Tipo</th><th>Descripción</th><th>Valor</th></tr></thead><tbody id="tablaContabilidad"></tbody></table></div>
+        </article>
+      </section>
+
+      <!-- REPORTES -->
+      <section id="vista-reportes" class="vista">
+        <div class="titulo-vista"><span class="etiqueta-seccion">GENERACIÓN DE REPORTES ALIMENTARIOS</span><h2>Reportes del sistema</h2><p>Reportes diarios, inventario general, pérdidas y consumo.</p></div>
+        <article class="panel">
+          <div class="encabezado-panel"><div><span class="etiqueta-seccion">REPORTES</span><h3>Generar informe</h3></div></div>
+          <div class="panel-form">
+            <div class="form-grid">
+              <div class="campo"><label>Tipo de reporte</label><select id="tipoReporte"><option>Reporte diario</option><option>Inventario general</option><option>Pérdida de alimentos</option><option>Consumo</option><option>Informe de operaciones contables</option></select></div>
+              <div class="campo"><label>Fecha</label><input id="fechaReporte" type="date"></div>
+            </div>
+            <div class="acciones"><button class="boton-principal" onclick="generarReporte()">Generar reporte</button><button class="boton-secundario" onclick="window.print()">Imprimir</button></div>
+            <div id="resultadoReporte" class="reporte-box"><h4>Resultado</h4><p>Seleccione un tipo de reporte y pulse “Generar reporte”.</p></div>
+          </div>
+        </article>
+      </section>
+
+      <!-- CONFIGURACIÓN / AYUDA -->
+      <section id="vista-configuracion" class="vista">
+        <div class="titulo-vista"><span class="etiqueta-seccion">SISTEMA</span><h2>Configuración</h2><p>Opciones generales de la sesión actual.</p></div>
+        <article class="panel panel-form">
+          <h3 style="font-family:var(--font-title);font-size:14px;">Sesión y seguridad</h3>
+          <p style="color:var(--text-secondary);font-size:9px;margin-top:8px;">Puedes cerrar la sesión actual desde aquí. El sistema también conserva los datos de demostración en el navegador.</p>
+          <div class="acciones"><button class="boton-peligro" onclick="cerrarSesion()">Cerrar sesión</button></div>
+        </article>
+      </section>
+
+      <section id="vista-ayuda" class="vista">
+        <div class="titulo-vista"><span class="etiqueta-seccion">AYUDA</span><h2>Ayuda del sistema</h2><p>Resumen de las funcionalidades implementadas según los RF.</p></div>
+        <article class="panel panel-form">
+          <div class="reporte-box" style="margin-top:0;">
+            <h4>Autenticación</h4><p>Inicio de sesión, validación de credenciales, verificación de rol, restablecimiento de contraseña y cierre de sesión.</p>
+          </div>
+          <div class="reporte-box"><h4>Gestión</h4><p>Usuarios: crear, modificar, eliminar e informar.
+Alimentos: registrar, modificar, eliminar y registrar pérdidas.
+Inventario: consulta de existencias y actualización de cantidades.</p></div>
+          <div class="reporte-box"><h4>Operación</h4><p>Sincronización, sedes, ventas, gastos, operaciones contables y reportes alimentarios.</p></div>
+        </article>
+      </section>
+
+      <footer>
+        <span>© 2026 Meraki · Sistema de Gestión Alimentaria</span>
+        <span>Versión 2.0 · RF integrados</span>
+      </footer>
+    </main>
+  </div>
+
+<script>
+(() => {
+  "use strict";
+
+  const hoy = new Date();
+  const fechaISO = hoy.toISOString().slice(0,10);
+
+  const datosIniciales = {
+    usuarios: [
+      {id:1,nombre:"Administrador",login:"admin",clave:"1234",rol:"Administrador"},
+      {id:2,nombre:"Operador Meraki",login:"operador",clave:"1234",rol:"Operador"},
+      {id:3,nombre:"Contador Meraki",login:"contador",clave:"1234",rol:"Contador"}
+    ],
+    alimentos: [
+      {id:1,nombre:"Leche entera",categoria:"Lácteos",cantidad:82,vencimiento:"2026-10-05",sede:"Sede principal"},
+      {id:2,nombre:"Arroz blanco",categoria:"Granos",cantidad:64,vencimiento:"2027-02-15",sede:"Sede principal"},
+      {id:3,nombre:"Zanahoria",categoria:"Verduras",cantidad:28,vencimiento:"2026-09-25",sede:"Sede norte"},
+      {id:4,nombre:"Pollo",categoria:"Cárnicos",cantidad:12,vencimiento:"2026-09-22",sede:"Sede sur"}
+    ],
+    perdidas: [],
+    contabilidad: [
+      {id:1,fecha:fechaISO,tipo:"Venta",descripcion:"Ventas iniciales del mes",valor:8420000}
+    ],
+    sedes: [
+      {nombre:"Sede principal",estado:"Conectada",actualizacion:"Pendiente"},
+      {nombre:"Sede norte",estado:"Conectada",actualizacion:"Pendiente"},
+      {nombre:"Sede sur",estado:"Conectada",actualizacion:"Pendiente"}
+    ]
+  };
+
+  let db = JSON.parse(localStorage.getItem("merakiDB")) || datosIniciales;
+  let sesion = JSON.parse(sessionStorage.getItem("merakiSesion") || "null");
+
+  function guardar() {
+    localStorage.setItem("merakiDB", JSON.stringify(db));
+  }
+
+  function mensaje(id, texto, tipo="ok") {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = texto;
+    el.className = "mensaje visible " + tipo;
+    setTimeout(() => el.classList.remove("visible"), 4000);
+  }
+
+  function formatoMoneda(valor) {
+    return new Intl.NumberFormat("es-CO",{style:"currency",currency:"COP",maximumFractionDigits:0}).format(valor || 0);
+  }
+
+  function iniciales(nombre) {
+    return nombre.split(" ").map(x => x[0]).join("").slice(0,2).toUpperCase();
+  }
+
+  function fechaBonita(fecha) {
+    if (!fecha) return "-";
+    const [y,m,d] = fecha.split("-");
+    return `${d}/${m}/${y}`;
+  }
+
+  function mostrarVista(nombre) {
+    if (!sesion) return;
+    document.querySelectorAll(".vista").forEach(v => v.classList.remove("activa"));
+    const vista = document.getElementById("vista-" + nombre);
+    if (vista) vista.classList.add("activa");
+
+    document.querySelectorAll(".elemento-menu").forEach(a => {
+      a.classList.toggle("activo", a.dataset.vista === nombre);
+    });
+
+    const titulos = {
+      dashboard:["Inicio / Dashboard","Panel principal"],
+      usuarios:["Inicio / Usuarios","Gestión de usuarios"],
+      alimentos:["Inicio / Alimentos","Administración de alimentos"],
+      inventario:["Inicio / Inventario","Inventario en tiempo real"],
+      sincronizacion:["Inicio / Sincronización","Sincronización de inventario"],
+      contabilidad:["Inicio / Contabilidad","Movimientos contables"],
+      reportes:["Inicio / Reportes","Generación de reportes"],
+      configuracion:["Inicio / Configuración","Configuración"],
+      ayuda:["Inicio / Ayuda","Ayuda"]
+    };
+    document.getElementById("migas").textContent = titulos[nombre]?.[0] || "Inicio";
+    document.getElementById("tituloSuperior").textContent = titulos[nombre]?.[1] || "Meraki";
+    renderizarTodo();
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+  window.mostrarVista = mostrarVista;
+
+  function iniciarSesion(usuario) {
+    sesion = {id:usuario.id,nombre:usuario.nombre,rol:usuario.rol,login:usuario.login};
+    sessionStorage.setItem("merakiSesion", JSON.stringify(sesion));
+    document.getElementById("pantallaLogin").classList.add("oculto");
+    document.getElementById("aplicacion").classList.remove("oculto");
+    document.getElementById("nombreSidebar").textContent = sesion.nombre;
+    document.getElementById("rolSidebar").textContent = sesion.rol;
+    document.getElementById("nombreTop").textContent = sesion.nombre;
+    document.getElementById("avatarSidebar").textContent = iniciales(sesion.nombre);
+    document.getElementById("avatarTop").textContent = iniciales(sesion.nombre);
+    aplicarPermisos();
+    renderizarTodo();
+  }
+
+  function aplicarPermisos() {
+    // Verificación de rol: las operaciones de usuarios solo quedan disponibles para Administrador.
+    const enlaceUsuarios = document.querySelector('[data-vista="usuarios"]');
+    if (enlaceUsuarios) enlaceUsuarios.style.display = sesion?.rol === "Administrador" ? "flex" : "none";
+  }
+
+  function cerrarSesion() {
+    sessionStorage.removeItem("merakiSesion");
+    sesion = null;
+    document.getElementById("aplicacion").classList.add("oculto");
+    document.getElementById("pantallaLogin").classList.remove("oculto");
+    document.getElementById("formLogin").reset();
+    mostrarVistaLogin();
+  }
+  window.cerrarSesion = cerrarSesion;
+
+  function mostrarVistaLogin() {
+    document.getElementById("formRestablecer").classList.add("oculto");
+  }
+
+  document.querySelectorAll(".elemento-menu").forEach(enlace => {
+    enlace.addEventListener("click", e => {
+      e.preventDefault();
+      mostrarVista(enlace.dataset.vista);
+    });
+  });
+
+  document.getElementById("formLogin").addEventListener("submit", e => {
+    e.preventDefault();
+    const login = document.getElementById("loginUsuario").value.trim();
+    const clave = document.getElementById("loginClave").value;
+    const usuario = db.usuarios.find(u => u.login === login && u.clave === clave);
+
+    if (!usuario) {
+      mensaje("mensajeLogin","Credenciales incorrectas. Verifique usuario y contraseña.","error");
+      return;
+    }
+    iniciarSesion(usuario);
+  });
+
+  document.getElementById("btnRestablecer").addEventListener("click", () => {
+    document.getElementById("formRestablecer").classList.toggle("oculto");
+  });
+
+  document.getElementById("formRestablecer").addEventListener("submit", e => {
+    e.preventDefault();
+    const login = document.getElementById("recUsuario").value.trim();
+    const nueva = document.getElementById("recNuevaClave").value;
+    const usuario = db.usuarios.find(u => u.login === login);
+    if (!usuario) {
+      mensaje("mensajeReset","El usuario no existe.","error");
+      return;
+    }
+    usuario.clave = nueva;
+    guardar();
+    mensaje("mensajeReset","Contraseña restablecida correctamente.","ok");
+    e.target.reset();
+  });
+
+  document.getElementById("btnPerfil").addEventListener("click", () => mostrarVista("configuracion"));
+
+  document.getElementById("formUsuario").addEventListener("submit", e => {
+    e.preventDefault();
+    if (sesion?.rol !== "Administrador") {
+      mensaje("mensajeUsuario","Solo el Administrador puede gestionar usuarios.","error");
+      return;
+    }
+    const id = Number(document.getElementById("usuarioId").value);
+    const datos = {
+      id: id || Date.now(),
+      nombre: document.getElementById("usuarioNombre").value.trim(),
+      login: document.getElementById("usuarioLogin").value.trim(),
+      clave: document.getElementById("usuarioClave").value,
+      rol: document.getElementById("usuarioRol").value
+    };
+    if (db.usuarios.some(u => u.login === datos.login && u.id !== id)) {
+      mensaje("mensajeUsuario","Ese nombre de usuario ya existe.","error");
+      return;
+    }
+    if (id) {
+      const i = db.usuarios.findIndex(u => u.id === id);
+      db.usuarios[i] = datos;
+      mensaje("mensajeUsuario","Usuario modificado correctamente.");
+    } else {
+      db.usuarios.push(datos);
+      mensaje("mensajeUsuario","Usuario creado correctamente.");
+    }
+    guardar(); limpiarUsuario(); renderizarTodo();
+  });
+
+  function limpiarUsuario() {
+    document.getElementById("formUsuario").reset();
+    document.getElementById("usuarioId").value = "";
+  }
+  window.limpiarUsuario = limpiarUsuario;
+
+  function editarUsuario(id) {
+    const u = db.usuarios.find(x => x.id === id);
+    if (!u) return;
+    document.getElementById("usuarioId").value = u.id;
+    document.getElementById("usuarioNombre").value = u.nombre;
+    document.getElementById("usuarioLogin").value = u.login;
+    document.getElementById("usuarioClave").value = u.clave;
+    document.getElementById("usuarioRol").value = u.rol;
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+  window.editarUsuario = editarUsuario;
+
+  function eliminarUsuario(id) {
+    if (sesion?.rol !== "Administrador") return;
+    if (id === sesion.id) {
+      mensaje("mensajeUsuario","No puede eliminar el usuario que está actualmente conectado.","error");
+      return;
+    }
+    if (!confirm("¿Desea eliminar este usuario?")) return;
+    db.usuarios = db.usuarios.filter(u => u.id !== id);
+    guardar(); renderizarTodo();
+  }
+  window.eliminarUsuario = eliminarUsuario;
+
+  function generarInformeUsuarios() {
+    const administradores = db.usuarios.filter(u => u.rol === "Administrador").length;
+    const operadores = db.usuarios.filter(u => u.rol === "Operador").length;
+    const contadores = db.usuarios.filter(u => u.rol === "Contador").length;
+    document.getElementById("informeUsuarios").innerHTML =
+      `<div class="reporte-box" style="margin-top:0"><h4>Informe generado</h4><p>Total de usuarios: ${db.usuarios.length}
+Administradores: ${administradores}
+Operadores: ${operadores}
+Contadores: ${contadores}
+Fecha de generación: ${fechaBonita(fechaISO)}</p></div>`;
+  }
+  window.generarInformeUsuarios = generarInformeUsuarios;
+
+  document.getElementById("formAlimento").addEventListener("submit", e => {
+    e.preventDefault();
+    const id = Number(document.getElementById("alimentoId").value);
+    const datos = {
+      id:id || Date.now(),
+      nombre:document.getElementById("alimentoNombre").value.trim(),
+      categoria:document.getElementById("alimentoCategoria").value,
+      cantidad:Number(document.getElementById("alimentoCantidad").value),
+      vencimiento:document.getElementById("alimentoVencimiento").value,
+      sede:document.getElementById("alimentoSede").value
+    };
+    if (id) {
+      const i = db.alimentos.findIndex(a => a.id === id);
+      db.alimentos[i] = datos;
+      mensaje("mensajeAlimento","Registro de alimento modificado correctamente.");
+    } else {
+      db.alimentos.push(datos);
+      mensaje("mensajeAlimento","Alimento ingresado correctamente.");
+    }
+    guardar(); limpiarAlimento(); renderizarTodo();
+  });
+
+  function limpiarAlimento() {
+    document.getElementById("formAlimento").reset();
+    document.getElementById("alimentoId").value = "";
+  }
+  window.limpiarAlimento = limpiarAlimento;
+
+  function editarAlimento(id) {
+    const a = db.alimentos.find(x => x.id === id);
+    if (!a) return;
+    document.getElementById("alimentoId").value=a.id;
+    document.getElementById("alimentoNombre").value=a.nombre;
+    document.getElementById("alimentoCategoria").value=a.categoria;
+    document.getElementById("alimentoCantidad").value=a.cantidad;
+    document.getElementById("alimentoVencimiento").value=a.vencimiento;
+    document.getElementById("alimentoSede").value=a.sede;
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+  window.editarAlimento = editarAlimento;
+
+  function eliminarAlimento(id) {
+    if (!confirm("¿Desea eliminar este alimento?")) return;
+    db.alimentos = db.alimentos.filter(a => a.id !== id);
+    guardar(); renderizarTodo();
+  }
+  window.eliminarAlimento = eliminarAlimento;
+
+  document.getElementById("formPerdida").addEventListener("submit", e => {
+    e.preventDefault();
+    const alimentoId = Number(document.getElementById("perdidaAlimento").value);
+    const cantidad = Number(document.getElementById("perdidaCantidad").value);
+    const alimento = db.alimentos.find(a => a.id === alimentoId);
+    if (!alimento) return;
+    if (cantidad > alimento.cantidad) {
+      mensaje("mensajePerdida","La pérdida no puede superar las existencias actuales.","error");
+      return;
+    }
+    alimento.cantidad -= cantidad;
+    db.perdidas.push({
+      id:Date.now(),fecha:fechaISO,alimento:alimento.nombre,cantidad,
+      motivo:document.getElementById("perdidaMotivo").value,
+      observacion:document.getElementById("perdidaObservacion").value
+    });
+    guardar(); e.target.reset();
+    mensaje("mensajePerdida","Pérdida registrada y descontada del inventario.","ok");
+    renderizarTodo();
+  });
+
+  document.getElementById("formContable").addEventListener("submit", e => {
+    e.preventDefault();
+    db.contabilidad.push({
+      id:Date.now(), fecha:fechaISO,
+      tipo:document.getElementById("contableTipo").value,
+      descripcion:document.getElementById("contableDescripcion").value.trim(),
+      valor:Number(document.getElementById("contableValor").value)
+    });
+    guardar(); e.target.reset();
+    mensaje("mensajeContable","Operación contable registrada correctamente.","ok");
+    renderizarTodo();
+  });
+
+  function sincronizar() {
+    document.getElementById("estadoSync").textContent = "Sincronizando información...";
+    document.getElementById("puntoSync").style.background = "var(--warning)";
+    setTimeout(() => {
+      const ahora = new Date().toLocaleString("es-CO");
+      db.sedes.forEach(s => { s.estado = "Conectada"; s.actualizacion = ahora; });
+      guardar();
+      document.getElementById("estadoSync").textContent = "Información sincronizada";
+      document.getElementById("puntoSync").style.background = "var(--success)";
+      document.getElementById("ultimaSync").textContent = "Última sincronización: " + ahora;
+      mensaje("mensajeSync","Inventario sincronizado con todas las sedes.","ok");
+      renderizarTodo();
+    }, 700);
+  }
+  window.sincronizar = sincronizar;
+
+  function estadoAlimento(a) {
+    const dias = Math.ceil((new Date(a.vencimiento+"T23:59:59") - new Date()) / 86400000);
+    if (a.cantidad <= 15) return ["Crítico","bad"];
+    if (dias <= 3) return ["Por vencer","bad"];
+    if (a.cantidad <= 30) return ["Stock bajo","warn"];
+    return ["Disponible","ok"];
+  }
+
+  function renderizarTodo() {
+    if (!sesion) return;
+    const totalUnidades = db.alimentos.reduce((s,a)=>s+a.cantidad,0);
+    const criticos = db.alimentos.filter(a=>estadoAlimento(a)[1] === "bad").length;
+    const porVencer = db.alimentos.filter(a => {
+      const dias = Math.ceil((new Date(a.vencimiento+"T23:59:59") - new Date())/86400000);
+      return dias <= 3;
+    }).length;
+    const ventas = db.contabilidad.filter(x=>x.tipo==="Venta").reduce((s,x)=>s+x.valor,0);
+    const gastos = db.contabilidad.filter(x=>x.tipo==="Gasto operativo").reduce((s,x)=>s+x.valor,0);
+
+    document.getElementById("statProductos").textContent = db.alimentos.length;
+    document.getElementById("statInventario").textContent = totalUnidades;
+    document.getElementById("statVencer").textContent = porVencer;
+    document.getElementById("statVentas").textContent = formatoMoneda(ventas);
+    document.getElementById("invTotal").textContent = db.alimentos.length;
+    document.getElementById("invUnidades").textContent = totalUnidades;
+    document.getElementById("invCriticos").textContent = criticos;
+    document.getElementById("totalVentas").textContent = formatoMoneda(ventas);
+    document.getElementById("totalGastos").textContent = formatoMoneda(gastos);
+    document.getElementById("balance").textContent = formatoMoneda(ventas-gastos);
+
+    document.getElementById("tablaUsuarios").innerHTML = db.usuarios.map(u =>
+      `<tr><td><strong>${u.nombre}</strong></td><td>${u.login}</td><td>${u.rol}</td><td><div class="acciones-tabla"><button onclick="editarUsuario(${u.id})">Editar</button><button class="eliminar" onclick="eliminarUsuario(${u.id})">Eliminar</button></div></td></tr>`
+    ).join("");
+
+    document.getElementById("tablaAlimentos").innerHTML = db.alimentos.map(a => {
+      const [estado,clase] = estadoAlimento(a);
+      return `<tr><td><strong>${a.nombre}</strong></td><td>${a.categoria}</td><td>${a.cantidad}</td><td>${fechaBonita(a.vencimiento)}</td><td>${a.sede}</td><td><div class="acciones-tabla"><button onclick="editarAlimento(${a.id})">Editar</button><button class="eliminar" onclick="eliminarAlimento(${a.id})">Eliminar</button></div></td></tr>`;
+    }).join("");
+
+    document.getElementById("tablaInventario").innerHTML = db.alimentos.map(a => {
+      const [estado,clase] = estadoAlimento(a);
+      return `<tr><td><strong>${a.nombre}</strong></td><td>${a.categoria}</td><td>${a.cantidad} unidades</td><td>${fechaBonita(a.vencimiento)}</td><td>${a.sede}</td><td><span class="estado-demo ${clase}">${estado}</span></td></tr>`;
+    }).join("");
+
+    document.getElementById("perdidaAlimento").innerHTML = db.alimentos.map(a => `<option value="${a.id}">${a.nombre} (${a.cantidad} disponibles)</option>`).join("");
+
+    document.getElementById("tablaContabilidad").innerHTML = [...db.contabilidad].reverse().map(x =>
+      `<tr><td>${fechaBonita(x.fecha)}</td><td><span class="estado-demo ${x.tipo==="Venta"?"ok":"warn"}">${x.tipo}</span></td><td>${x.descripcion}</td><td><strong>${formatoMoneda(x.valor)}</strong></td></tr>`
+    ).join("");
+
+    document.getElementById("tablaSedes").innerHTML = db.sedes.map(s =>
+      `<tr><td><strong>${s.nombre}</strong></td><td><span class="estado-demo ok">${s.estado}</span></td><td>${s.actualizacion}</td></tr>`
+    ).join("");
+
+    const alertas = [];
+    db.alimentos.forEach(a => {
+      const [estado] = estadoAlimento(a);
+      if (estado !== "Disponible") alertas.push(`<div class="elemento-alerta alerta-${estado==="Crítico"?"peligro":"advertencia"}"><div class="icono-alerta">!</div><div><strong>${a.nombre}</strong><p>${estado}: ${a.cantidad} unidades disponibles.</p><small>Actualizado ahora</small></div></div>`);
+    });
+    if (!alertas.length) alertas.push(`<div class="elemento-alerta alerta-exito"><div class="icono-alerta">✓</div><div><strong>Sin alertas críticas</strong><p>El inventario se encuentra dentro de los niveles configurados.</p><small>Actualizado ahora</small></div></div>`);
+    document.getElementById("dashboardAlertas").innerHTML = alertas.join("");
+    document.getElementById("contadorAlertas").textContent = alertas.length;
+
+    document.getElementById("dashboardInventario").innerHTML = db.alimentos.slice(0,5).map(a => {
+      const porcentaje = Math.min(100,Math.max(5,a.cantidad));
+      const [estado,clase] = estadoAlimento(a);
+      return `<div class="fila-inventario"><div class="producto"><div class="icono-producto">▤</div><div><strong>${a.nombre}</strong><span>${a.categoria}</span></div></div><div class="existencias"><div class="texto-existencias"><span>${a.cantidad} unidades</span><strong>${porcentaje}%</strong></div><div class="progreso ${clase==="warn"?"advertencia":clase==="bad"?"peligro":""}"><span style="width:${porcentaje}%"></span></div></div><span class="estado ${clase==="ok"?"exito":clase==="warn"?"advertencia":"peligro"}">${estado}</span></div>`;
+    }).join("");
+
+    const alturas = [45,68,54,82,61,90,72];
+    document.getElementById("graficaBarras").innerHTML = alturas.map((h,i) =>
+      `<div class="contenedor-barra"><div class="barra" style="height:${h}%"></div><small>${["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"][i]}</small></div>`
+    ).join("");
+
+    document.getElementById("ultimaSync").textContent = db.sedes[0].actualizacion !== "Pendiente" ? "Última sincronización: "+db.sedes[0].actualizacion : "Aún no se ha ejecutado una sincronización.";
+  }
+
+  function generarReporte() {
+    const tipo = document.getElementById("tipoReporte").value;
+    const fecha = document.getElementById("fechaReporte").value || fechaISO;
+    let texto = "";
+    if (tipo === "Reporte diario") {
+      texto = `Fecha: ${fechaBonita(fecha)}
+Productos registrados: ${db.alimentos.length}
+Unidades disponibles: ${db.alimentos.reduce((s,a)=>s+a.cantidad,0)}
+Pérdidas registradas: ${db.perdidas.length}
+Operaciones contables: ${db.contabilidad.length}`;
+    } else if (tipo === "Inventario general") {
+      texto = db.alimentos.map(a => `${a.nombre} | ${a.categoria} | ${a.cantidad} unidades | ${a.sede}`).join("\n") || "No hay alimentos registrados.";
+    } else if (tipo === "Pérdida de alimentos") {
+      texto = db.perdidas.length ? db.perdidas.map(p => `${fechaBonita(p.fecha)} | ${p.alimento} | ${p.cantidad} unidades | ${p.motivo}`).join("\n") : "No hay pérdidas registradas.";
+    } else if (tipo === "Consumo") {
+      texto = "Consumo estimado a partir de las salidas registradas.\n\n" +
+        (db.perdidas.length ? db.perdidas.map(p => `${p.alimento}: ${p.cantidad} unidades registradas como salida/pérdida`).join("\n") : "No hay registros de consumo/salidas disponibles.");
+    } else {
+      texto = db.contabilidad.map(x => `${fechaBonita(x.fecha)} | ${x.tipo} | ${x.descripcion} | ${formatoMoneda(x.valor)}`).join("\n");
+    }
+    document.getElementById("resultadoReporte").innerHTML = `<h4>${tipo}</h4><p>${texto}</p>`;
+  }
+  window.generarReporte = generarReporte;
+
+  // Inicialización
+  if (sesion) iniciarSesion(db.usuarios.find(u => u.id === sesion.id) || db.usuarios[0]);
+})();
+</script>
+</body>
+</html>
